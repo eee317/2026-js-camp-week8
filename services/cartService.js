@@ -12,6 +12,7 @@ const { validateCartQuantity, formatCurrency } = require('../utils');
 async function getCart() {
   // 請實作此函式
   // 提示：呼叫 fetchCart() 取得購物車資料並回傳
+  return fetchCart();
 }
 
 /**
@@ -25,6 +26,11 @@ async function addProductToCart(productId, quantity) {
   // 提示：先用 utils validateCartQuantity() 驗證數量，驗證失敗時回傳 { success: false, error: ... }
   // 驗證通過後，呼叫 addToCart() 加入購物車
   // 回傳格式：{ success: true, data: ... } / { success: false, error: ... }
+  const validation = validateCartQuantity(quantity);
+  if (!validation.isValid) return { success: false, error: validation.error };
+
+  const data = await addToCart(productId, quantity);
+  return { success: true, data };
 }
 
 /**
@@ -38,6 +44,11 @@ async function updateProduct(cartId, quantity) {
   // 提示：先用 utils validateCartQuantity() 驗證數量，驗證失敗時回傳 { success: false, error: ... }
   // 驗證通過後，呼叫 updateCartItem() 更新數量
   // 回傳格式：{ success: true, data: ... } / { success: false, error: ... }
+  const validation = validateCartQuantity(quantity);
+  if (!validation.isValid) return { success: false, error: validation.error };
+
+  const data = await updateCartItem(cartId, quantity);
+  return { success: true, data };
 }
 
 /**
@@ -49,6 +60,8 @@ async function removeProduct(cartId) {
   // 請實作此函式
   // 提示：呼叫 deleteCartItem()
   // 回傳格式：{ success: true, data: ... } / { success: false, error: ... }
+  const data = await deleteCartItem(cartId);
+  return { success: true, data };
 }
 
 /**
@@ -58,7 +71,9 @@ async function removeProduct(cartId) {
 async function emptyCart() {
   // 請實作此函式
   // 提示：呼叫 clearCart()
-  // 回傳格式：{ success: true, data: ... } 
+  // 回傳格式：{ success: true, data: ... }
+  const data = await clearCart();
+  return { success: true, data };
 }
 
 /**
@@ -69,6 +84,12 @@ async function getCartTotal() {
   // 請實作此函式
   // 提示：呼叫 fetchCart() 取得購物車資料
   // 回傳格式：{ total: 原始金額, finalTotal: 折扣後金額, itemCount: 商品筆數 }
+  const cart = await fetchCart();
+  return {
+    total: cart.total,
+    finalTotal: cart.finalTotal,
+    itemCount: cart.carts.length
+  };
 }
 
 /**
@@ -90,6 +111,21 @@ function displayCart(cart) {
   // ----------------------------------------
   // 商品總計：NT$ 1,600
   // 折扣後金額：NT$ 1,600
+  if (!cart.carts || cart.carts.length === 0) {
+    console.log('購物車是空的');
+    return;
+  }
+  console.log('購物車內容：');
+  cart.carts.forEach((item, i) => {
+    console.log('----------------------------------------');
+    console.log(`${i + 1}. ${item.product.title}`);
+    console.log(`   數量：${item.qty}`);
+    console.log(`   單價：${formatCurrency(item.product.price)}`);
+    console.log(`   小計：${formatCurrency(item.final_total)}`);
+  });
+  console.log('----------------------------------------');
+  console.log(`商品總計：${formatCurrency(cart.total)}`);
+  console.log(`折扣後金額：${formatCurrency(cart.finalTotal)}`);
 }
 
 module.exports = {

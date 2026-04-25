@@ -14,6 +14,13 @@ const { API_PATH, BASE_URL, ADMIN_TOKEN } = require('./config');
 async function fetchProducts() {
   // 請實作此函式
   // 回傳 response.data.products
+  try {
+    const response = await axios.get(`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/products`);
+    return response.data.products;
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    throw error;
+  }
 }
 
 /**
@@ -22,6 +29,13 @@ async function fetchProducts() {
  */
 async function fetchCart() {
   // 請實作此函式
+  try {
+    const response = await axios.get(`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching cart:', error);
+    throw error;
+  }
 }
 
 /**
@@ -32,6 +46,15 @@ async function fetchCart() {
  */
 async function addToCart(productId, quantity) {
   // 請實作此函式
+  try {
+    await axios.post(`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`, {
+      data: { productId, quantity }
+    });
+    return fetchCart();
+  } catch (error) {
+    console.error('Error adding to cart:', error);
+    throw error;
+  }
 }
 
 /**
@@ -42,6 +65,15 @@ async function addToCart(productId, quantity) {
  */
 async function updateCartItem(cartId, quantity) {
   // 請實作此函式
+  try {
+    const response = await axios.patch(`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`, {
+      data: { id: cartId, quantity }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating cart item:', error);
+    throw error;
+  }
 }
 
 /**
@@ -51,6 +83,13 @@ async function updateCartItem(cartId, quantity) {
  */
 async function deleteCartItem(cartId) {
   // 請實作此函式
+  try {
+    const response = await axios.delete(`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts/${cartId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting cart item:', error);
+    throw error;
+  }
 }
 
 /**
@@ -59,6 +98,13 @@ async function deleteCartItem(cartId) {
  */
 async function clearCart() {
   // 請實作此函式
+  try {
+    await axios.delete(`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`);
+    return fetchCart();
+  } catch (error) {
+    console.error('Error clearing cart:', error);
+    throw error;
+  }
 }
 
 /**
@@ -68,6 +114,15 @@ async function clearCart() {
  */
 async function createOrder(userInfo) {
   // 請實作此函式
+  try {
+    const response = await axios.post(`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/orders`, {
+      data: { user: userInfo }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating order:', error);
+    throw error;
+  }
 }
 
 // ========== 管理員 API ==========
@@ -86,6 +141,15 @@ async function createOrder(userInfo) {
  */
 async function fetchOrders() {
   // 請實作此函式
+  try {
+    const response = await axios.get(`${BASE_URL}/api/livejs/v1/admin/${API_PATH}/orders`, {
+      headers: { authorization: ADMIN_TOKEN }
+    });
+    return response.data.orders;
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    throw error;
+  }
 }
 
 /**
@@ -96,6 +160,17 @@ async function fetchOrders() {
  */
 async function updateOrderStatus(orderId, isPaid) {
   // 請實作此函式
+  try {
+    const response = await axios.put(`${BASE_URL}/api/livejs/v1/admin/${API_PATH}/orders`, {
+      data: { id: orderId, paid: isPaid }
+    }, {
+      headers: { authorization: ADMIN_TOKEN }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    throw error;
+  }
 }
 
 /**
@@ -105,6 +180,15 @@ async function updateOrderStatus(orderId, isPaid) {
  */
 async function deleteOrder(orderId) {
   // 請實作此函式
+  try {
+    const response = await axios.delete(`${BASE_URL}/api/livejs/v1/admin/${API_PATH}/orders/${orderId}`, {
+      headers: { authorization: ADMIN_TOKEN }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting order:', error);
+    throw error;
+  }
 }
 
 module.exports = {
